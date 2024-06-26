@@ -1,0 +1,9 @@
+{
+  "short_name": "Token Price",
+  "name": "Relatime Token Price Tracker",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
