@@ -1,6 +1,6 @@
 {
-  "short_name": "Token Price",
-  "name": "Relatime Token Price Tracker",
+  "short_name": "Trades",
+  "name": "Relatime account trades information",
   "icons": [],
   "start_url": ".",
   "display": "standalone",
