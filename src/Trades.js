@@ -18,20 +18,17 @@ function Trades() {
     let [trades, setTrades] = useState([]);
     useEffect(() => {
         async function loadTrades() {
-            let searchStartDate = (Date.now() - 1000 * 60 * 60 * 24) * 1_000_000;
-            let currentPage = await fetch(`${EVENTS_URL}/query/trade_swap?trader_account_id=${accountId}&start_block_timestamp_nanosec=${searchStartDate}&blocks=100`)
+            let currentPage = await fetch(`${EVENTS_URL}/query/trade_swap?trader_account_id=${accountId}&pagination_by=Newest&limit=200`)
                 .then(response => response.json());
-            let allTrades = [...currentPage];
-            while (currentPage.length >= 100) {
-                let lastBlockTimestamp = allTrades[allTrades.length - 1].block_timestamp_nanosec;
-                let nanosPart = lastBlockTimestamp.slice(-3);
-                let newNanoPart = parseInt(nanosPart) + 1;
-                searchStartDate = lastBlockTimestamp.slice(0, -3) + newNanoPart.toString().padStart(3, '0');
-                currentPage = await fetch(`${EVENTS_URL}/query/trade_swap?trader_account_id=${accountId}&start_block_timestamp_nanosec=${searchStartDate}&blocks=100`)
+            let allTrades = [...currentPage.map(d => d.event)];
+            setTrades(allTrades)
+            while (allTrades.length <= 1000 && currentPage.length > 0) {
+                currentPage = await fetch(`${EVENTS_URL}/query/trade_swap?trader_account_id=${accountId}&pagination_by=BeforeId&id=${currentPage[currentPage.length - 1].id}&limit=200`)
                     .then(response => response.json());
-                allTrades.push(...currentPage);
+                allTrades.push(...currentPage.map(d => d.event));
+                setTrades(allTrades);
             }
-            setTrades(allTrades.reverse());
+            setTrades(allTrades);
         }
         loadTrades();
     }, [accountId]);
